@@ -176,19 +176,17 @@ public interface ImportSelector {
 可以看出，`AutoConfigurationImportSelector` 类实现了 `ImportSelector`接口，也就实现了这个接口中的 `selectImports`方法，该方法主要用于**获取所有符合条件的类的全限定类名，这些类需要被加载到 IoC 容器中**。
 
 ```java
-private static final String[] NO_IMPORTS = new String[0];
+private static final String[] NO_IMPORTS = {};
 
 public String[] selectImports(AnnotationMetadata annotationMetadata) {
-        // <1>.判断自动装配开关是否打开
-        if (!this.isEnabled(annotationMetadata)) {
-            return NO_IMPORTS;
-        } else {
-          //<2>.获取所有需要装配的bean
-            AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader.loadMetadata(this.beanClassLoader);
-            AutoConfigurationImportSelector.AutoConfigurationEntry autoConfigurationEntry = this.getAutoConfigurationEntry(autoConfigurationMetadata, annotationMetadata);
-            return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
-        }
-    }
+    // <1>.判断自动装配开关是否打开
+		if (!isEnabled(annotationMetadata)) {
+			return NO_IMPORTS;
+		}
+    // <2>.获取所有需要装配的bean
+		AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(annotationMetadata);
+		return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
+	}
 ```
 
 这里我们需要重点关注一下`getAutoConfigurationEntry()`方法，这个方法主要负责加载自动配置类的。
